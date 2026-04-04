@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase, getLocalUserId, setLocalUserId } from '@/lib/supabase'
+import { supabase, getLocalUserId, setLocalUserId, setLocalUserName } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 
 const TEAMS = [
@@ -69,6 +69,7 @@ export default function HomePage() {
         .single()
       if (err) throw err
       setLocalUserId(data.id)
+      setLocalUserName(data.name)
       router.push('/cartela')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'tente novamente'

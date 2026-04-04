@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import { User } from '@/types'
 import BottomNav from '@/components/BottomNav'
-import Logo from '@/components/Logo'
+import PageHeader from '@/components/PageHeader'
 
 const PODIUM_COLORS = [
   { bg: 'var(--gold-dim)', border: 'rgba(251,191,36,0.25)', text: 'var(--gold)' },
@@ -36,30 +36,9 @@ export default function RankingPage() {
   return (
     <div className="min-h-screen pb-28">
       {/* Header */}
-      <div
-        className="px-4 pt-5 pb-5"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(8,9,14,1), rgba(8,9,14,0.8))',
-        }}
-      >
-        <div className="flex items-center justify-between mb-1">
-          <Logo size="sm" />
-          <div
-            className="px-3 py-1.5 rounded-full"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-bright)',
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              fontWeight: 500,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Ranking
-          </div>
-        </div>
-        <div className="flex items-center gap-2 mt-3">
+      <div>
+        <PageHeader label="Ranking" />
+        <div className="px-4 flex items-center gap-2 pb-3">
           <span
             className="rounded-full"
             style={{ width: '6px', height: '6px', background: 'var(--accent)', display: 'inline-block', boxShadow: '0 0 6px var(--accent)' }}

@@ -20,6 +20,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
 
 // Helpers de usuário (localStorage)
 export const USER_KEY = 'bolao_user_id'
+export const USER_NAME_KEY = 'bolao_user_name'
 
 export function getLocalUserId(): string | null {
   if (typeof window === 'undefined') return null
@@ -30,6 +31,16 @@ export function setLocalUserId(id: string) {
   localStorage.setItem(USER_KEY, id)
 }
 
+export function getLocalUserName(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(USER_NAME_KEY)
+}
+
+export function setLocalUserName(name: string) {
+  localStorage.setItem(USER_NAME_KEY, name)
+}
+
 export function clearLocalUser() {
   localStorage.removeItem(USER_KEY)
+  localStorage.removeItem(USER_NAME_KEY)
 }

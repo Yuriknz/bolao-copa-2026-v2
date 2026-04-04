@@ -6,7 +6,7 @@ import { supabase, getLocalUserId } from '@/lib/supabase'
 import { Pick, Match } from '@/types'
 import BottomNav from '@/components/BottomNav'
 import StatusBadge from '@/components/StatusBadge'
-import Logo from '@/components/Logo'
+import PageHeader from '@/components/PageHeader'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -55,27 +55,11 @@ export default function HistoricoPage() {
   return (
     <div className="min-h-screen pb-28">
       {/* Header */}
-      <div className="px-4 pt-5 pb-4">
-        <div className="flex items-center justify-between mb-5">
-          <Logo size="sm" />
-          <div
-            className="px-3 py-1.5 rounded-full"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-bright)',
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              fontWeight: 500,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Histórico
-          </div>
-        </div>
+      <div>
+        <PageHeader label="Histórico" />
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 px-4 pb-4">
           <div
             className="rounded-2xl p-4"
             style={{

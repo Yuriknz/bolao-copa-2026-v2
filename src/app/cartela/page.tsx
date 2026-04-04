@@ -6,7 +6,7 @@ import { supabase, getLocalUserId } from '@/lib/supabase'
 import { Match, Pick, PHASE_LABELS, MatchPhase } from '@/types'
 import MatchCard from '@/components/MatchCard'
 import BottomNav from '@/components/BottomNav'
-import Logo from '@/components/Logo'
+import PageHeader from '@/components/PageHeader'
 
 const PHASE_ORDER: MatchPhase[] = ['groups', 'r16', 'qf', 'sf', 'final']
 
@@ -57,32 +57,16 @@ export default function CartelaPage() {
     <div className="min-h-screen pb-28">
       {/* Header */}
       <div
-        className="sticky top-0 z-40 px-4 pt-5 pb-3"
+        className="sticky top-0 z-40"
         style={{
           background: 'linear-gradient(to bottom, rgba(8,9,14,1) 0%, rgba(8,9,14,0.97) 80%, transparent 100%)',
           backdropFilter: 'blur(4px)',
         }}
       >
-        <div className="flex items-center justify-between mb-4">
-          <Logo size="sm" />
-          <div
-            className="px-3 py-1.5 rounded-full"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-bright)',
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              fontWeight: 500,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Cartela
-          </div>
-        </div>
+        <PageHeader label="Cartela" sticky={false} />
 
         {/* Phase tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-3 px-4 scrollbar-hide">
           {availablePhases.map(phase => {
             const active = activePhase === phase
             return (
