@@ -8,10 +8,11 @@ import MatchCard from '@/components/MatchCard'
 import BottomNav from '@/components/BottomNav'
 import PageHeader from '@/components/PageHeader'
 
-const PHASE_ORDER: MatchPhase[] = ['groups', 'r16', 'qf', 'sf', 'final']
+const PHASE_ORDER: MatchPhase[] = ['groups', 'r32', 'r16', 'qf', 'sf', 'final']
 
 const PHASE_SHORT: Record<MatchPhase, string> = {
   groups: 'Grupos',
+  r32: '16 Avos',
   r16: 'Oitavas',
   qf: 'Quartas',
   sf: 'Semi',
