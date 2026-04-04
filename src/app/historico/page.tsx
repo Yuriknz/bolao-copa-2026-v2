@@ -7,6 +7,7 @@ import { Pick, Match } from '@/types'
 import BottomNav from '@/components/BottomNav'
 import StatusBadge from '@/components/StatusBadge'
 import PageHeader from '@/components/PageHeader'
+import TeamFlag from '@/components/TeamFlag'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -173,13 +174,13 @@ export default function HistoricoPage() {
                   {/* Teams */}
                   <div className="flex items-center justify-between mb-3.5">
                     <div className="flex items-center gap-2">
-                      <span style={{ fontSize: '1.4rem' }}>{m.flag_home}</span>
+                      <TeamFlag teamName={m.team_home} emoji={m.flag_home} width={28} height={21} />
                       <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>{m.team_home}</span>
                     </div>
                     <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600, letterSpacing: '0.08em' }}>VS</span>
                     <div className="flex items-center gap-2">
                       <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>{m.team_away}</span>
-                      <span style={{ fontSize: '1.4rem' }}>{m.flag_away}</span>
+                      <TeamFlag teamName={m.team_away} emoji={m.flag_away} width={28} height={21} />
                     </div>
                   </div>
 

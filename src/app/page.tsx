@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, getLocalUserId, setLocalUserId, setLocalUserName } from '@/lib/supabase'
 import Logo from '@/components/Logo'
+import TeamFlag from '@/components/TeamFlag'
 
 const TEAMS = [
   { name: 'Brasil', flag: '🇧🇷' },
@@ -216,7 +217,9 @@ export default function HomePage() {
                 }}
               >
                 <span className="flex items-center gap-2">
-                  {selectedTeam && <span style={{ fontSize: '1.1rem' }}>{selectedTeam.flag}</span>}
+                  {selectedTeam && (
+                    <TeamFlag teamName={selectedTeam.name} emoji={selectedTeam.flag} width={22} height={16} />
+                  )}
                   {champion || 'Selecionar seleção...'}
                 </span>
                 <span
@@ -268,7 +271,7 @@ export default function HomePage() {
                         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
                         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
                       >
-                        <span style={{ fontSize: '1rem' }}>{t.flag}</span>
+                        <TeamFlag teamName={t.name} emoji={t.flag} width={24} height={18} />
                         {t.name}
                         {isSelected && (
                           <span style={{ marginLeft: 'auto', fontSize: '12px' }}>✓</span>

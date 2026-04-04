@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Match, Pick } from '@/types'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import StatusBadge from './StatusBadge'
+import TeamFlag from './TeamFlag'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -85,7 +86,7 @@ export default function MatchCard({ match, existingPick }: Props) {
       <div className="flex items-center gap-3">
         {/* Home team */}
         <div className="flex-1 flex flex-col items-center gap-1.5">
-          <span style={{ fontSize: '2rem', lineHeight: 1 }}>{match.flag_home}</span>
+          <TeamFlag teamName={match.team_home} emoji={match.flag_home} width={44} height={33} />
           <span
             style={{
               fontSize: '11px',
@@ -175,7 +176,7 @@ export default function MatchCard({ match, existingPick }: Props) {
 
         {/* Away team */}
         <div className="flex-1 flex flex-col items-center gap-1.5">
-          <span style={{ fontSize: '2rem', lineHeight: 1 }}>{match.flag_away}</span>
+          <TeamFlag teamName={match.team_away} emoji={match.flag_away} width={44} height={33} />
           <span
             style={{
               fontSize: '11px',
