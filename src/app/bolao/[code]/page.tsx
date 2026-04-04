@@ -99,11 +99,13 @@ export default function BolaoPage() {
       {/* Ações */}
       <div className="px-4 pt-4 grid grid-cols-2 gap-3">
         <button onClick={() => router.push(`/bolao/${code}/cartela`)}
-          style={{ padding: '12px', borderRadius: '12px', fontWeight: 700, fontSize: '14px', color: '#08090e', background: 'var(--accent)', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,230,118,0.15)' }}>
+          className="transition-all active:scale-[0.97]"
+          style={{ padding: '14px', borderRadius: '14px', fontWeight: 700, fontSize: '14px', color: '#08090e', background: 'linear-gradient(135deg,#00e676,#00c853)', cursor: 'pointer', boxShadow: '0 0 28px rgba(0,230,118,0.28), 0 4px 16px rgba(0,0,0,0.3)', letterSpacing: '0.01em' }}>
           ⚽ Palpitar
         </button>
         <button onClick={() => router.push(`/bolao/${code}/historico`)}
-          style={{ padding: '12px', borderRadius: '12px', fontWeight: 700, fontSize: '14px', color: 'var(--text-muted)', background: 'var(--surface)', border: '1px solid var(--border-bright)', cursor: 'pointer' }}>
+          className="card-hover transition-all active:scale-[0.97]"
+          style={{ padding: '14px', borderRadius: '14px', fontWeight: 700, fontSize: '14px', color: 'var(--text)', background: 'var(--surface)', border: '1px solid var(--border-bright)', cursor: 'pointer' }}>
           📋 Histórico
         </button>
       </div>
@@ -122,11 +124,18 @@ export default function BolaoPage() {
           <div className="flex flex-col gap-2">
             {members.map((m, idx) => {
               const isMe = m.user_id === myId
+              const isTop = idx === 0
               return (
-                <div key={m.id} className="flex items-center gap-3 rounded-2xl p-4"
+                <div key={m.id}
+                  className={`flex items-center gap-3 rounded-2xl p-4 card-hover ${isTop ? 'shimmer-once' : ''}`}
                   style={{
-                    background: isMe ? 'var(--accent-dim)' : 'var(--surface)',
-                    border: `1px solid ${isMe ? 'rgba(0,230,118,0.25)' : 'var(--border-bright)'}`,
+                    background: isMe
+                      ? 'var(--accent-dim)'
+                      : isTop
+                        ? 'linear-gradient(135deg, rgba(251,191,36,0.08) 0%, var(--surface) 60%)'
+                        : 'var(--surface)',
+                    border: `1px solid ${isMe ? 'rgba(0,230,118,0.25)' : isTop ? 'rgba(251,191,36,0.25)' : 'var(--border-bright)'}`,
+                    boxShadow: isTop ? '0 4px 24px rgba(251,191,36,0.06)' : undefined,
                   }}>
                   <div style={{ width: '28px', textAlign: 'center', fontSize: '16px', fontWeight: 900, color: idx < 3 ? 'var(--gold)' : 'var(--text-muted)', flexShrink: 0 }}>
                     {medal(idx + 1)}

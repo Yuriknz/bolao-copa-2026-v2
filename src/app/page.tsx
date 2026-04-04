@@ -101,16 +101,29 @@ export default function HomePage() {
       className="min-h-screen flex flex-col items-center justify-center px-4 py-14 relative"
       style={{ zIndex: 1 }}
     >
-      {/* Ambient glow */}
+      {/* Ambient glow — top */}
       <div
         className="fixed pointer-events-none"
         style={{
-          top: '-10%',
+          top: '-5%',
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '500px',
-          height: '300px',
-          background: 'radial-gradient(ellipse, rgba(0,230,118,0.06) 0%, transparent 70%)',
+          width: '640px',
+          height: '360px',
+          background: 'radial-gradient(ellipse, rgba(0,230,118,0.10) 0%, rgba(0,230,118,0.03) 45%, transparent 70%)',
+          zIndex: 0,
+        }}
+      />
+      {/* Ambient glow — bottom */}
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          bottom: '-5%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '400px',
+          height: '200px',
+          background: 'radial-gradient(ellipse, rgba(0,230,118,0.04) 0%, transparent 70%)',
           zIndex: 0,
         }}
       />
@@ -140,11 +153,7 @@ export default function HomePage() {
 
         {/* Card */}
         <div
-          className="rounded-2xl p-6"
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border-bright)',
-          }}
+          className="gradient-border-animated shimmer-once rounded-2xl p-6"
         >
           {/* Name input */}
           <div className="mb-5">
