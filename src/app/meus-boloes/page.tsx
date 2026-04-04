@@ -1,10 +1,41 @@
 'use client'
 export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, getLocalUserId, getLocalUserName, clearLocalUser } from '@/lib/supabase'
 import { Bolao, BolaoMember } from '@/types'
 import Logo from '@/components/Logo'
+import TeamFlag from '@/components/TeamFlag'
+
+// Prazo: início do primeiro jogo — 11/06/2026 19:00 UTC
+const CHAMPION_DEADLINE = new Date('2026-06-11T19:00:00Z')
+
+const TEAMS = [
+  { name: 'Brasil', flag: '🇧🇷' },
+  { name: 'Argentina', flag: '🇦🇷' },
+  { name: 'França', flag: '🇫🇷' },
+  { name: 'Alemanha', flag: '🇩🇪' },
+  { name: 'Espanha', flag: '🇪🇸' },
+  { name: 'Portugal', flag: '🇵🇹' },
+  { name: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { name: 'Itália', flag: '🇮🇹' },
+  { name: 'Holanda', flag: '🇳🇱' },
+  { name: 'Bélgica', flag: '🇧🇪' },
+  { name: 'Uruguai', flag: '🇺🇾' },
+  { name: 'México', flag: '🇲🇽' },
+  { name: 'Estados Unidos', flag: '🇺🇸' },
+  { name: 'Japão', flag: '🇯🇵' },
+  { name: 'Coreia do Sul', flag: '🇰🇷' },
+  { name: 'Marrocos', flag: '🇲🇦' },
+  { name: 'Senegal', flag: '🇸🇳' },
+  { name: 'Austrália', flag: '🇦🇺' },
+  { name: 'Canadá', flag: '🇨🇦' },
+  { name: 'Croácia', flag: '🇭🇷' },
+  { name: 'Suíça', flag: '🇨🇭' },
+  { name: 'Polônia', flag: '🇵🇱' },
+  { name: 'Equador', flag: '🇪🇨' },
+  { name: 'Gana', flag: '🇬🇭' },
+]
 
 export default function MeusBoloes() {
   const router = useRouter()
@@ -17,13 +48,56 @@ export default function MeusBoloes() {
   const [error, setError] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [showJoin, setShowJoin] = useState(false)
+
+  // Campeão
+  const [champion, setChampion] = useState<string | null>(null)
+  const [showChampionEdit, setShowChampionEdit] = useState(false)
+  const [champDraft, setChampDraft] = useState('')
+  const [champDropOpen, setChampDropOpen] = useState(false)
+  const [savingChamp, setSavingChamp] = useState(false)
+  const [champSaved, setChampSaved] = useState(false)
+  const champDropRef = useRef<HTMLDivElement>(null)
+
   const userName = getLocalUserName() ?? ''
+  const canEditChampion = new Date() < CHAMPION_DEADLINE
 
   useEffect(() => {
     const id = getLocalUserId()
     if (!id) { router.replace('/'); return }
     loadData(id)
+    loadChampion(id)
   }, [router])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (champDropRef.current && !champDropRef.current.contains(e.target as Node)) {
+        setChampDropOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function loadChampion(userId: string) {
+    const { data } = await supabase.from('users').select('champion_pick').eq('id', userId).single()
+    if (data) setChampion(data.champion_pick ?? null)
+  }
+
+  async function saveChampion() {
+    const userId = getLocalUserId()
+    if (!userId) return
+    setSavingChamp(true)
+    const { error: err } = await supabase
+      .from('users')
+      .update({ champion_pick: champDraft || null })
+      .eq('id', userId)
+    if (!err) {
+      setChampion(champDraft || null)
+      setChampSaved(true)
+      setTimeout(() => { setChampSaved(false); setShowChampionEdit(false) }, 1500)
+    }
+    setSavingChamp(false)
+  }
 
   async function loadData(userId: string) {
     setLoading(true)
@@ -110,6 +184,121 @@ export default function MeusBoloes() {
           Sair
         </button>
       </div>
+
+      {/* Palpite de campeão */}
+      {!showChampionEdit ? (
+        <div
+          className="rounded-2xl p-4 mb-5 flex items-center justify-between gap-3"
+          style={{
+            background: 'var(--surface)',
+            border: champion ? '1px solid rgba(251,191,36,0.25)' : '1px solid var(--border-bright)',
+          }}
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            {champion ? (
+              <>
+                <TeamFlag
+                  teamName={champion}
+                  emoji={TEAMS.find(t => t.name === champion)?.flag ?? '🏳️'}
+                  width={36} height={27}
+                />
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>
+                    Seu campeão <span style={{ color: 'var(--gold)' }}>+20 pts</span>
+                  </p>
+                  <p style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {champion}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div>
+                <p style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>
+                  Campeão <span style={{ color: 'var(--gold)' }}>+20 pts</span>
+                </p>
+                <p style={{ fontSize: '13px', color: 'var(--text-dim)' }}>Nenhum palpite feito</p>
+              </div>
+            )}
+          </div>
+
+          {canEditChampion ? (
+            <button
+              onClick={() => { setChampDraft(champion ?? ''); setShowChampionEdit(true) }}
+              className="flex-shrink-0 transition-all active:scale-[0.95]"
+              style={{ fontSize: '12px', fontWeight: 700, padding: '7px 13px', borderRadius: '9px', cursor: 'pointer', background: 'var(--surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border-bright)' }}
+            >
+              {champion ? 'Trocar' : 'Escolher'}
+            </button>
+          ) : (
+            <span style={{ fontSize: '11px', color: 'var(--text-dim)', flexShrink: 0 }}>🔒 Encerrado</span>
+          )}
+        </div>
+      ) : (
+        <div className="rounded-2xl p-4 mb-5" style={{ background: 'var(--surface)', border: '1px solid rgba(251,191,36,0.25)' }}>
+          <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--gold)', marginBottom: '10px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Trocar campeão
+          </p>
+
+          <div ref={champDropRef} className="relative mb-3">
+            <button
+              type="button"
+              onClick={() => setChampDropOpen(o => !o)}
+              className="w-full text-left outline-none flex items-center justify-between gap-2"
+              style={{ borderRadius: '12px', padding: '11px 14px', fontSize: '14px', fontWeight: 500, background: 'var(--surface-2)', border: champDraft ? '1.5px solid rgba(251,191,36,0.4)' : '1.5px solid var(--border-bright)', color: champDraft ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              <span className="flex items-center gap-2">
+                {champDraft && (
+                  <TeamFlag teamName={champDraft} emoji={TEAMS.find(t => t.name === champDraft)?.flag ?? '🏳️'} width={22} height={16} />
+                )}
+                {champDraft || 'Selecionar seleção...'}
+              </span>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)', transform: champDropOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>▾</span>
+            </button>
+
+            {champDropOpen && (
+              <div className="absolute z-50 w-full mt-1 rounded-2xl overflow-hidden animate-fade-in"
+                style={{ background: 'var(--surface-3)', border: '1px solid var(--border-bright)', boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxHeight: '220px', overflowY: 'auto' }}>
+                <div
+                  onClick={() => { setChampDraft(''); setChampDropOpen(false) }}
+                  className="px-4 py-2.5 cursor-pointer"
+                  style={{ fontSize: '13px', color: 'var(--text-muted)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Sem palpite
+                </div>
+                {TEAMS.map(t => {
+                  const sel = champDraft === t.name
+                  return (
+                    <div key={t.name}
+                      onClick={() => { setChampDraft(t.name); setChampDropOpen(false) }}
+                      className="px-4 py-2.5 cursor-pointer flex items-center gap-2.5"
+                      style={{ fontSize: '14px', fontWeight: sel ? 600 : 500, color: sel ? 'var(--gold)' : 'var(--text)', background: sel ? 'var(--gold-dim)' : 'transparent' }}
+                      onMouseEnter={e => { if (!sel) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                      onMouseLeave={e => { if (!sel) e.currentTarget.style.background = 'transparent' }}
+                    >
+                      <TeamFlag teamName={t.name} emoji={t.flag} width={24} height={18} />
+                      {t.name}
+                      {sel && <span style={{ marginLeft: 'auto', fontSize: '12px' }}>✓</span>}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <button onClick={saveChampion} disabled={savingChamp}
+              style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', color: '#08090e', background: champSaved ? 'var(--accent)' : 'var(--gold)', cursor: 'pointer', opacity: savingChamp ? 0.6 : 1, transition: 'background 0.2s' }}>
+              {champSaved ? '✓ Salvo!' : savingChamp ? 'Salvando...' : 'Confirmar'}
+            </button>
+            <button onClick={() => setShowChampionEdit(false)}
+              style={{ flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)', background: 'var(--surface-2)', cursor: 'pointer' }}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Action buttons */}
       <div className="grid grid-cols-2 gap-3 mb-5">
