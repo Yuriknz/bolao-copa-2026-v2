@@ -65,3 +65,22 @@ export const STATUS_LABELS: Record<MatchStatus, string> = {
   live: 'Ao Vivo',
   finished: 'Encerrado',
 }
+
+export interface Bolao {
+  id: string
+  name: string
+  code: string
+  created_by: string | null
+  created_at: string
+}
+
+export interface BolaoMember {
+  id: string
+  bolao_id: string
+  user_id: string
+  total_points: number
+  exact_scores: number
+  joined_at: string
+  user?: User
+  bolao?: Bolao
+}

@@ -45,7 +45,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const id = getLocalUserId()
-    if (id) router.replace('/cartela')
+    if (id) router.replace('/meus-boloes')
     else setChecking(false)
   }, [router])
 
@@ -71,7 +71,7 @@ export default function HomePage() {
       if (err) throw err
       setLocalUserId(data.id)
       setLocalUserName(data.name)
-      router.push('/cartela')
+      router.push('/meus-boloes')
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'tente novamente'
       setError('Erro ao entrar: ' + msg)
