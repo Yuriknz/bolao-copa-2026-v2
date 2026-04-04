@@ -8,7 +8,7 @@ import MatchCard from '@/components/MatchCard'
 import PageHeader from '@/components/PageHeader'
 import BottomNav from '@/components/BottomNav'
 
-const PHASE_ORDER: MatchPhase[] = ['groups', 'r16', 'qf', 'sf', 'final']
+const PHASE_ORDER: MatchPhase[] = ['groups', 'r32', 'r16', 'qf', 'sf', 'final']
 
 export default function CartelaBolaoPage() {
   const router = useRouter()

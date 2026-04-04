@@ -1,4 +1,4 @@
-export type MatchPhase = 'groups' | 'r16' | 'qf' | 'sf' | 'final'
+export type MatchPhase = 'groups' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
 export type MatchStatus = 'open' | 'locked' | 'live' | 'finished'
 
 export interface User {
@@ -8,6 +8,25 @@ export interface User {
   total_points: number
   exact_scores: number
   created_at: string
+}
+
+export interface Bolao {
+  id: string
+  name: string
+  code: string
+  created_by: string | null
+  created_at: string
+}
+
+export interface BolaoMember {
+  id: string
+  bolao_id: string
+  user_id: string
+  total_points: number
+  exact_scores: number
+  joined_at: string
+  user?: User
+  bolao?: Bolao
 }
 
 export interface Match {
@@ -45,42 +64,25 @@ export interface RankingEntry {
 
 export const PHASE_LABELS: Record<MatchPhase, string> = {
   groups: 'Fase de Grupos',
-  r16: 'Oitavas de Final',
-  qf: 'Quartas de Final',
-  sf: 'Semifinal',
-  final: 'Final',
+  r32:    '16 Avos de Final',
+  r16:    'Oitavas de Final',
+  qf:     'Quartas de Final',
+  sf:     'Semifinal',
+  final:  'Final',
 }
 
 export const PHASE_MULTIPLIERS: Record<MatchPhase, number> = {
   groups: 1,
-  r16: 2,
-  qf: 3,
-  sf: 4,
-  final: 5,
+  r32:    2,
+  r16:    3,
+  qf:     4,
+  sf:     5,
+  final:  6,
 }
 
 export const STATUS_LABELS: Record<MatchStatus, string> = {
-  open: 'Aberto',
-  locked: 'Travado',
-  live: 'Ao Vivo',
+  open:     'Aberto',
+  locked:   'Travado',
+  live:     'Ao Vivo',
   finished: 'Encerrado',
-}
-
-export interface Bolao {
-  id: string
-  name: string
-  code: string
-  created_by: string | null
-  created_at: string
-}
-
-export interface BolaoMember {
-  id: string
-  bolao_id: string
-  user_id: string
-  total_points: number
-  exact_scores: number
-  joined_at: string
-  user?: User
-  bolao?: Bolao
 }
