@@ -3,12 +3,33 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, getLocalUserId, setLocalUserId } from '@/lib/supabase'
+import Logo from '@/components/Logo'
 
 const TEAMS = [
-  'Brasil','Argentina','França','Alemanha','Espanha','Portugal',
-  'Inglaterra','Itália','Holanda','Bélgica','Uruguai','México',
-  'EUA','Japão','Coreia do Sul','Marrocos','Senegal','Austrália',
-  'Canadá','Croácia','Suíça','Polônia','Equador','Gana',
+  { name: 'Brasil', flag: '🇧🇷' },
+  { name: 'Argentina', flag: '🇦🇷' },
+  { name: 'França', flag: '🇫🇷' },
+  { name: 'Alemanha', flag: '🇩🇪' },
+  { name: 'Espanha', flag: '🇪🇸' },
+  { name: 'Portugal', flag: '🇵🇹' },
+  { name: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { name: 'Itália', flag: '🇮🇹' },
+  { name: 'Holanda', flag: '🇳🇱' },
+  { name: 'Bélgica', flag: '🇧🇪' },
+  { name: 'Uruguai', flag: '🇺🇾' },
+  { name: 'México', flag: '🇲🇽' },
+  { name: 'EUA', flag: '🇺🇸' },
+  { name: 'Japão', flag: '🇯🇵' },
+  { name: 'Coreia do Sul', flag: '🇰🇷' },
+  { name: 'Marrocos', flag: '🇲🇦' },
+  { name: 'Senegal', flag: '🇸🇳' },
+  { name: 'Austrália', flag: '🇦🇺' },
+  { name: 'Canadá', flag: '🇨🇦' },
+  { name: 'Croácia', flag: '🇭🇷' },
+  { name: 'Suíça', flag: '🇨🇭' },
+  { name: 'Polônia', flag: '🇵🇱' },
+  { name: 'Equador', flag: '🇪🇨' },
+  { name: 'Gana', flag: '🇬🇭' },
 ]
 
 export default function HomePage() {
@@ -27,7 +48,6 @@ export default function HomePage() {
     else setChecking(false)
   }, [router])
 
-  // Fecha dropdown ao clicar fora
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
@@ -50,38 +70,95 @@ export default function HomePage() {
       if (err) throw err
       setLocalUserId(data.id)
       router.push('/cartela')
-    } catch (e: any) {
-      setError('Erro ao entrar: ' + (e?.message ?? 'tente novamente'))
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'tente novamente'
+      setError('Erro ao entrar: ' + msg)
     } finally {
       setLoading(false)
     }
   }
 
+  const selectedTeam = TEAMS.find(t => t.name === champion)
+
   if (checking) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div
+        className="animate-spin rounded-full"
+        style={{
+          width: '28px',
+          height: '28px',
+          border: '2px solid var(--accent-dim)',
+          borderTopColor: 'var(--accent)',
+        }}
+      />
     </div>
   )
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-      <div className="fixed top-0 left-0 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #22c55e, transparent)' }} />
-      <div className="fixed bottom-0 right-0 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #facc15, transparent)' }} />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-14 relative"
+      style={{ zIndex: 1 }}
+    >
+      {/* Ambient glow */}
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          top: '-10%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '500px',
+          height: '300px',
+          background: 'radial-gradient(ellipse, rgba(0,230,118,0.06) 0%, transparent 70%)',
+          zIndex: 0,
+        }}
+      />
 
-      <div className="w-full max-w-sm animate-slide-up relative z-10">
-        <div className="text-center mb-10">
-          <div className="text-6xl mb-4">⚽</div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Bolão</h1>
-          <p className="text-green-400 font-bold text-lg mt-1">Copa 2026</p>
-          <p className="text-slate-500 text-sm mt-2">Palpite nos jogos com seus amigos</p>
+      <div className="w-full max-w-sm animate-slide-up relative" style={{ zIndex: 1 }}>
+
+        {/* Logo block */}
+        <div className="mb-10 flex flex-col items-center">
+          <Logo size="lg" className="items-center" />
+          <div className="mt-5 flex items-center gap-3">
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            <span
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-muted)',
+                fontWeight: 500,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Copa do Mundo 2026
+            </span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+          </div>
         </div>
 
-        <div className="rounded-2xl p-6 border" style={{ background: '#111118', borderColor: 'rgba(255,255,255,0.08)' }}>
-          {/* Nome */}
+        {/* Card */}
+        <div
+          className="rounded-2xl p-6"
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border-bright)',
+          }}
+        >
+          {/* Name input */}
           <div className="mb-5">
-            <label className="block text-sm font-semibold text-slate-400 mb-2">Seu nome</label>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                marginBottom: '8px',
+              }}
+            >
+              Seu nome
+            </label>
             <input
               type="text"
               value={name}
@@ -89,70 +166,161 @@ export default function HomePage() {
               onKeyDown={e => e.key === 'Enter' && handleEnter()}
               placeholder="Como te chamam?"
               maxLength={30}
-              className="w-full rounded-xl px-4 py-3 text-white font-semibold outline-none focus:ring-2 focus:ring-green-500 transition"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="w-full outline-none transition-all"
+              style={{
+                borderRadius: '12px',
+                padding: '12px 14px',
+                fontSize: '15px',
+                fontWeight: 500,
+                color: 'var(--text)',
+                background: 'var(--surface-2)',
+                border: name ? '1.5px solid rgba(0,230,118,0.3)' : '1.5px solid var(--border-bright)',
+                fontFamily: 'Space Grotesk, system-ui',
+              }}
             />
           </div>
 
-          {/* Dropdown customizado */}
+          {/* Champion dropdown */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-slate-400 mb-2">
-              Palpite do Campeão <span className="text-green-500 font-bold">+20 pts bônus</span>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                marginBottom: '8px',
+              }}
+            >
+              Campeão{' '}
+              <span style={{ color: 'var(--accent)', fontWeight: 700 }}>+20 pts</span>
             </label>
+
             <div ref={dropRef} className="relative">
               <button
                 type="button"
                 onClick={() => setOpen(o => !o)}
-                className="w-full rounded-xl px-4 py-3 text-left font-semibold outline-none focus:ring-2 focus:ring-green-500 transition flex items-center justify-between"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: champion ? '#f1f5f9' : '#475569' }}
+                className="w-full text-left outline-none transition-all flex items-center justify-between gap-2"
+                style={{
+                  borderRadius: '12px',
+                  padding: '12px 14px',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  background: 'var(--surface-2)',
+                  border: champion ? '1.5px solid rgba(0,230,118,0.3)' : '1.5px solid var(--border-bright)',
+                  color: champion ? 'var(--text)' : 'var(--text-muted)',
+                  fontFamily: 'Space Grotesk, system-ui',
+                  cursor: 'pointer',
+                }}
               >
-                <span>{champion || 'Selecionar seleção...'}</span>
-                <span className="text-slate-500 ml-2" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+                <span className="flex items-center gap-2">
+                  {selectedTeam && <span style={{ fontSize: '1.1rem' }}>{selectedTeam.flag}</span>}
+                  {champion || 'Selecionar seleção...'}
+                </span>
+                <span
+                  style={{
+                    color: 'var(--text-muted)',
+                    fontSize: '12px',
+                    transform: open ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s',
+                    flexShrink: 0,
+                  }}
+                >
+                  ▾
+                </span>
               </button>
 
               {open && (
-                <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden border shadow-2xl"
-                  style={{ background: '#1a1a24', borderColor: 'rgba(255,255,255,0.12)', maxHeight: '220px', overflowY: 'auto' }}>
+                <div
+                  className="absolute z-50 w-full mt-1 rounded-2xl overflow-hidden animate-fade-in"
+                  style={{
+                    background: 'var(--surface-3)',
+                    border: '1px solid var(--border-bright)',
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
+                    maxHeight: '220px',
+                    overflowY: 'auto',
+                  }}
+                >
                   <div
                     onClick={() => { setChampion(''); setOpen(false) }}
-                    className="px-4 py-2.5 text-sm text-slate-500 cursor-pointer hover:bg-white/5 transition"
+                    className="px-4 py-2.5 cursor-pointer transition-colors"
+                    style={{ fontSize: '13px', color: 'var(--text-muted)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     Sem palpite
                   </div>
-                  {TEAMS.map(t => (
-                    <div key={t}
-                      onClick={() => { setChampion(t); setOpen(false) }}
-                      className="px-4 py-2.5 text-sm font-semibold cursor-pointer transition"
-                      style={{
-                        color: champion === t ? '#22c55e' : '#e2e8f0',
-                        background: champion === t ? 'rgba(34,197,94,0.1)' : 'transparent',
-                      }}
-                      onMouseEnter={e => { if (champion !== t) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)' }}
-                      onMouseLeave={e => { if (champion !== t) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                    >
-                      {t}
-                    </div>
-                  ))}
+                  {TEAMS.map(t => {
+                    const isSelected = champion === t.name
+                    return (
+                      <div
+                        key={t.name}
+                        onClick={() => { setChampion(t.name); setOpen(false) }}
+                        className="px-4 py-2.5 cursor-pointer transition-colors flex items-center gap-2.5"
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: isSelected ? 600 : 500,
+                          color: isSelected ? 'var(--accent)' : 'var(--text)',
+                          background: isSelected ? 'var(--accent-dim)' : 'transparent',
+                        }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
+                      >
+                        <span style={{ fontSize: '1rem' }}>{t.flag}</span>
+                        {t.name}
+                        {isSelected && (
+                          <span style={{ marginLeft: 'auto', fontSize: '12px' }}>✓</span>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>
-            <p className="text-slate-600 text-xs mt-1">Disponível só antes do primeiro jogo</p>
+
+            <p style={{ fontSize: '11px', color: 'var(--text-dim)', marginTop: '6px' }}>
+              Disponível só antes do 1º jogo
+            </p>
           </div>
 
-          {error && <p className="text-red-400 text-sm mb-4 font-medium">{error}</p>}
+          {error && (
+            <p style={{ color: 'var(--red)', fontSize: '13px', marginBottom: '14px', fontWeight: 500 }}>
+              {error}
+            </p>
+          )}
 
           <button
             onClick={handleEnter}
             disabled={loading}
-            className="w-full py-3 rounded-xl font-extrabold text-white text-base tracking-wide transition-all active:scale-95 disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 4px 20px rgba(34,197,94,0.3)' }}
+            className="w-full transition-all active:scale-[0.98] disabled:opacity-50"
+            style={{
+              padding: '13px',
+              borderRadius: '12px',
+              fontWeight: 700,
+              fontSize: '15px',
+              letterSpacing: '0.02em',
+              color: '#08090e',
+              background: 'var(--accent)',
+              boxShadow: '0 0 24px rgba(0,230,118,0.25)',
+              fontFamily: 'Space Grotesk, system-ui',
+              cursor: loading ? 'wait' : 'pointer',
+            }}
           >
             {loading ? 'Entrando...' : 'Entrar no Bolão →'}
           </button>
         </div>
 
-        <p className="text-center text-slate-600 text-xs mt-6">
-          Sem senha • Sem cadastro • Só diversão
+        {/* Footer tagline */}
+        <p
+          className="text-center mt-6 flex items-center justify-center gap-3"
+          style={{ fontSize: '11px', color: 'var(--text-dim)' }}
+        >
+          <span>Sem senha</span>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <span>Sem cadastro</span>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <span>Só diversão</span>
         </p>
       </div>
     </div>

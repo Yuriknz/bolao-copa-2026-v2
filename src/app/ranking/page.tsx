@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import { User } from '@/types'
 import BottomNav from '@/components/BottomNav'
+import Logo from '@/components/Logo'
+
+const PODIUM_COLORS = [
+  { bg: 'var(--gold-dim)', border: 'rgba(251,191,36,0.25)', text: 'var(--gold)' },
+  { bg: 'rgba(148,163,184,0.08)', border: 'rgba(148,163,184,0.2)', text: '#94a3b8' },
+  { bg: 'rgba(180,120,60,0.08)', border: 'rgba(180,120,60,0.2)', text: '#cd853f' },
+]
 
 export default function RankingPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -23,96 +30,260 @@ export default function RankingPage() {
     setLoading(false)
   }
 
-  const medal = (pos: number) => {
-    if (pos === 1) return '🥇'
-    if (pos === 2) return '🥈'
-    if (pos === 3) return '🥉'
-    return `${pos}º`
-  }
+  const podium = users.slice(0, 3)
+  const rest = users.slice(3)
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-28">
       {/* Header */}
-      <div className="px-4 pt-6 pb-4"
-        style={{ background: 'linear-gradient(135deg, #064e1a, #111118)' }}>
-        <h1 className="text-2xl font-extrabold text-white">Ranking</h1>
-        <p className="text-green-400 text-xs mt-0.5 font-semibold">Tabela de pontuação ao vivo</p>
-      </div>
-
-      <div className="px-4 mt-4">
-        {loading ? (
-          <div className="flex justify-center mt-20">
-            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : users.length === 0 ? (
-          <div className="text-center mt-20 text-slate-600">
-            <p className="text-4xl mb-3">👥</p>
-            <p className="font-semibold">Ninguém no bolão ainda</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {users.map((user, idx) => {
-              const pos = idx + 1
-              const isMe = user.id === myId
-              return (
-                <div key={user.id}
-                  className="flex items-center gap-3 p-4 rounded-2xl border transition-all"
-                  style={{
-                    background: isMe ? 'rgba(34,197,94,0.08)' : '#111118',
-                    borderColor: isMe ? 'rgba(34,197,94,0.25)' : 'rgba(255,255,255,0.07)',
-                  }}>
-                  {/* Posição */}
-                  <div className="w-10 text-center text-lg font-black" style={{ color: pos <= 3 ? '#facc15' : '#475569' }}>
-                    {medal(pos)}
-                  </div>
-
-                  {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-extrabold text-sm shrink-0"
-                    style={{ background: isMe ? '#16a34a' : '#1e2433' }}>
-                    {user.name[0].toUpperCase()}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm text-white truncate">
-                      {user.name} {isMe && <span className="text-green-400 text-xs">(você)</span>}
-                    </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {user.exact_scores} placar{user.exact_scores !== 1 ? 'es' : ''} exato{user.exact_scores !== 1 ? 's' : ''}
-                    </div>
-                  </div>
-
-                  {/* Pontos */}
-                  <div className="text-right shrink-0">
-                    <div className="text-lg font-extrabold" style={{ color: isMe ? '#22c55e' : '#f1f5f9' }}>
-                      {user.total_points}
-                    </div>
-                    <div className="text-[10px] text-slate-600 font-semibold">pts</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Legenda pontuação */}
-        <div className="mt-6 p-4 rounded-2xl border" style={{ background: '#111118', borderColor: 'rgba(255,255,255,0.07)' }}>
-          <p className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">Como funciona</p>
-          <div className="space-y-2 text-xs text-slate-500">
-            <div className="flex justify-between">
-              <span>Placar exato</span>
-              <span className="text-green-400 font-bold">3 pts × multiplicador</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Só o vencedor</span>
-              <span className="text-yellow-400 font-bold">1 pt × multiplicador</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Campeão certo</span>
-              <span className="text-purple-400 font-bold">+20 pts bônus</span>
-            </div>
+      <div
+        className="px-4 pt-5 pb-5"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(8,9,14,1), rgba(8,9,14,0.8))',
+        }}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <Logo size="sm" />
+          <div
+            className="px-3 py-1.5 rounded-full"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border-bright)',
+              fontSize: '11px',
+              color: 'var(--text-muted)',
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Ranking
           </div>
         </div>
+        <div className="flex items-center gap-2 mt-3">
+          <span
+            className="rounded-full"
+            style={{ width: '6px', height: '6px', background: 'var(--accent)', display: 'inline-block', boxShadow: '0 0 6px var(--accent)' }}
+          />
+          <span style={{ fontSize: '11px', color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Atualizado ao vivo
+          </span>
+        </div>
+      </div>
+
+      <div className="px-4">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center mt-24 gap-4">
+            <div
+              className="animate-spin rounded-full"
+              style={{
+                width: '32px',
+                height: '32px',
+                border: '2px solid var(--surface-2)',
+                borderTopColor: 'var(--accent)',
+              }}
+            />
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Carregando ranking...</p>
+          </div>
+        ) : users.length === 0 ? (
+          <div className="text-center mt-24">
+            <p style={{ fontSize: '2.5rem', marginBottom: '12px' }}>👥</p>
+            <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-muted)' }}>
+              Ninguém no bolão ainda
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Podium - top 3 */}
+            {podium.length > 0 && (
+              <div className="space-y-2 mb-4">
+                {podium.map((user, idx) => {
+                  const isMe = user.id === myId
+                  const colors = PODIUM_COLORS[idx]
+                  const MEDALS = ['🥇', '🥈', '🥉']
+
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex items-center gap-3 rounded-2xl p-4 transition-all animate-slide-up"
+                      style={{
+                        background: isMe ? 'var(--accent-dim)' : colors.bg,
+                        border: `1px solid ${isMe ? 'rgba(0,230,118,0.3)' : colors.border}`,
+                        animationDelay: `${idx * 0.07}s`,
+                      }}
+                    >
+                      {/* Medal */}
+                      <span style={{ fontSize: '1.5rem', width: '32px', textAlign: 'center', flexShrink: 0 }}>
+                        {MEDALS[idx]}
+                      </span>
+
+                      {/* Avatar */}
+                      <div
+                        className="rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          background: isMe ? 'var(--accent)' : colors.border,
+                          color: isMe ? '#08090e' : colors.text,
+                          fontSize: '14px',
+                          border: `2px solid ${isMe ? 'transparent' : colors.border}`,
+                        }}
+                      >
+                        {user.name[0].toUpperCase()}
+                      </div>
+
+                      {/* Name + subtitle */}
+                      <div className="flex-1 min-w-0">
+                        <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text)', lineHeight: 1.2 }} className="truncate">
+                          {user.name}
+                          {isMe && (
+                            <span style={{ fontSize: '10px', color: 'var(--accent)', fontWeight: 600, marginLeft: '6px' }}>
+                              você
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {user.exact_scores} placar{user.exact_scores !== 1 ? 'es' : ''} exato{user.exact_scores !== 1 ? 's' : ''}
+                        </div>
+                      </div>
+
+                      {/* Points */}
+                      <div className="text-right shrink-0">
+                        <div
+                          style={{
+                            fontFamily: 'Bebas Neue, system-ui',
+                            fontSize: '1.8rem',
+                            color: isMe ? 'var(--accent)' : colors.text,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {user.total_points}
+                        </div>
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em' }}>
+                          PTS
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Divider */}
+            {rest.length > 0 && (
+              <div className="flex items-center gap-3 my-4">
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                <span style={{ fontSize: '11px', color: 'var(--text-dim)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Restantes
+                </span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              </div>
+            )}
+
+            {/* Rest of ranking */}
+            {rest.length > 0 && (
+              <div
+                className="rounded-2xl overflow-hidden"
+                style={{ border: '1px solid var(--border)' }}
+              >
+                {rest.map((user, idx) => {
+                  const pos = idx + 4
+                  const isMe = user.id === myId
+                  const isLast = idx === rest.length - 1
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex items-center gap-3 px-4 py-3 transition-colors"
+                      style={{
+                        background: isMe ? 'var(--accent-glow)' : 'var(--surface)',
+                        borderBottom: isLast ? 'none' : '1px solid var(--border)',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '28px',
+                          textAlign: 'center',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                          color: 'var(--text-muted)',
+                          flexShrink: 0,
+                          fontFamily: 'Bebas Neue, system-ui',
+                          letterSpacing: '0.04em',
+                        }}
+                      >
+                        {pos}°
+                      </span>
+                      <div
+                        className="rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          background: isMe ? 'var(--accent)' : 'var(--surface-2)',
+                          color: isMe ? '#08090e' : 'var(--text-muted)',
+                          fontSize: '12px',
+                        }}
+                      >
+                        {user.name[0].toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text)' }} className="truncate">
+                          {user.name}
+                          {isMe && <span style={{ color: 'var(--accent)', fontSize: '10px', marginLeft: '5px' }}>você</span>}
+                        </p>
+                        <p style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                          {user.exact_scores} exatos
+                        </p>
+                      </div>
+                      <p
+                        style={{
+                          fontFamily: 'Bebas Neue, system-ui',
+                          fontSize: '1.3rem',
+                          color: isMe ? 'var(--accent)' : 'var(--text)',
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        {user.total_points}
+                        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginLeft: '3px', fontFamily: 'Space Grotesk' }}>
+                          pts
+                        </span>
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Scoring legend */}
+            <div
+              className="mt-5 mb-4 rounded-2xl p-4"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            >
+              <p
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  color: 'var(--text-muted)',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px',
+                }}
+              >
+                Como funciona
+              </p>
+              <div className="space-y-2.5">
+                {[
+                  { label: 'Placar exato', value: '3 pts × mult', color: 'var(--accent)' },
+                  { label: 'Só o vencedor', value: '1 pt × mult', color: 'var(--gold)' },
+                  { label: 'Campeão certo', value: '+20 pts bônus', color: '#a78bfa' },
+                ].map(item => (
+                  <div key={item.label} className="flex items-center justify-between">
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{item.label}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: item.color }}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <BottomNav />
