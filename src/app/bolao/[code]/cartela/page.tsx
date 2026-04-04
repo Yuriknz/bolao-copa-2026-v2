@@ -56,7 +56,7 @@ export default function CartelaBolaoPage() {
           style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', marginBottom: '8px', display: 'block' }}>
           ← Ranking
         </button>
-        <PageHeader title="Cartela" subtitle="Todos os jogos da Copa 2026" />
+        <PageHeader label="Cartela" />
         <div className="flex gap-2 mt-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
           {availablePhases.map(phase => (
             <button
