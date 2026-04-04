@@ -141,8 +141,8 @@ export function getCountryCode(teamName: string): string | null {
   return TEAM_CODES[teamName] ?? null
 }
 
-export function getFlagUrl(teamName: string, width: 40 | 80 | 160 = 80): string | null {
+export function getFlagUrl(teamName: string, _width?: number): string | null {
   const code = getCountryCode(teamName)
   if (!code) return null
-  return `https://flagcdn.com/w${width}/${code}.png`
+  return `https://flagcdn.com/${code}.svg`
 }

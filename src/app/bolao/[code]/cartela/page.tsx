@@ -91,23 +91,7 @@ export default function CartelaBolaoPage() {
             <p style={{ fontSize: '36px', marginBottom: '10px' }}>📅</p>
             <p style={{ fontWeight: 600 }}>Jogos ainda não disponíveis</p>
           </div>
-        ) : activePhase === 'groups'
-          ? Object.entries(
-              byPhase['groups'].reduce((acc, m) => {
-                const g = m.group_name ?? 'Grupo'
-                if (!acc[g]) acc[g] = []
-                acc[g].push(m)
-                return acc
-              }, {} as Record<string, Match[]>)
-            ).map(([group, gMatches]) => (
-              <div key={group}>
-                <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', margin: '16px 0 8px' }}>
-                  {group}
-                </p>
-                {gMatches.map(m => <MatchCard key={m.id} match={m} existingPick={picks[m.id]} />)}
-              </div>
-            ))
-          : byPhase[activePhase].map(m => <MatchCard key={m.id} match={m} existingPick={picks[m.id]} />)
+        ) : byPhase[activePhase].map(m => <MatchCard key={m.id} match={m} existingPick={picks[m.id]} />)
         }
       </div>
       <BottomNav bolaoCode={code} />
