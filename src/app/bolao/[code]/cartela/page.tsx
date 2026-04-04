@@ -17,12 +17,10 @@ export default function CartelaBolaoPage() {
   const [picks, setPicks] = useState<Record<string, Pick>>({})
   const [loading, setLoading] = useState(true)
   const [activePhase, setActivePhase] = useState<MatchPhase>('groups')
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   useEffect(() => {
     const id = getLocalUserId()
     if (!id) { router.replace('/'); return }
-    setCurrentUserId(id)
     loadData(id)
   }, [])
 
@@ -34,10 +32,8 @@ export default function CartelaBolaoPage() {
     ])
     if (matchData) setMatches(matchData)
     if (pickData) {
-      // Filtra defensivamente para garantir que só picks do usuário atual entram no estado
-      const ownPicks = pickData.filter(p => p.user_id === userId)
       const map: Record<string, Pick> = {}
-      ownPicks.forEach(p => { map[p.match_id] = p })
+      pickData.forEach(p => { map[p.match_id] = p })
       setPicks(map)
     }
     setLoading(false)
@@ -95,14 +91,7 @@ export default function CartelaBolaoPage() {
             <p style={{ fontSize: '36px', marginBottom: '10px' }}>📅</p>
             <p style={{ fontWeight: 600 }}>Jogos ainda não disponíveis</p>
           </div>
-        ) : byPhase[activePhase].map(m => (
-            <MatchCard
-              key={`${currentUserId}-${m.id}`}
-              match={m}
-              existingPick={picks[m.id]}
-              currentUserId={currentUserId ?? undefined}
-            />
-          ))
+        ) : byPhase[activePhase].map(m => <MatchCard key={m.id} match={m} existingPick={picks[m.id]} />)
         }
       </div>
       <BottomNav bolaoCode={code} />

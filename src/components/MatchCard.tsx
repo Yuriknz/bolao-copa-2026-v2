@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Match, Pick } from '@/types'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import StatusBadge from './StatusBadge'
@@ -10,7 +10,6 @@ import { ptBR } from 'date-fns/locale'
 interface Props {
   match: Match
   existingPick?: Pick
-  currentUserId?: string
 }
 
 const STATUS_BORDER: Record<string, string> = {
@@ -20,28 +19,15 @@ const STATUS_BORDER: Record<string, string> = {
   finished: '',
 }
 
-export default function MatchCard({ match, existingPick, currentUserId }: Props) {
+export default function MatchCard({ match, existingPick }: Props) {
   const canPick = match.status === 'open'
-
-  // Garante que o pick exibido pertence ao usuário atual
-  const ownPick = existingPick && existingPick.user_id === (currentUserId ?? getLocalUserId())
-    ? existingPick
-    : undefined
-
-  const [home, setHome] = useState<string>(ownPick?.pick_home?.toString() ?? '')
-  const [away, setAway] = useState<string>(ownPick?.pick_away?.toString() ?? '')
-
-  // Sincroniza inputs quando o usuário troca ou o palpite chega do servidor
-  useEffect(() => {
-    setHome(ownPick?.pick_home?.toString() ?? '')
-    setAway(ownPick?.pick_away?.toString() ?? '')
-  }, [ownPick?.id, currentUserId])
-
+  const [home, setHome] = useState<string>(existingPick?.pick_home?.toString() ?? '')
+  const [away, setAway] = useState<string>(existingPick?.pick_away?.toString() ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [err, setErr] = useState('')
 
-  const hasPick = ownPick != null
+  const hasPick = existingPick != null
 
   async function savePick() {
     const userId = getLocalUserId()
@@ -206,7 +192,7 @@ export default function MatchCard({ match, existingPick, currentUserId }: Props)
       </div>
 
       {/* Result row - finished matches */}
-      {match.status === 'finished' && ownPick && (
+      {match.status === 'finished' && hasPick && (
         <div
           className="mt-3.5 pt-3 flex items-center justify-between"
           style={{ borderTop: '1px solid var(--border)' }}
@@ -216,13 +202,13 @@ export default function MatchCard({ match, existingPick, currentUserId }: Props)
               Seu palpite
             </p>
             <p style={{ fontFamily: 'Bebas Neue, system-ui', fontSize: '1.2rem', color: 'var(--text)', letterSpacing: '0.04em' }}>
-              {ownPick.pick_home} : {ownPick.pick_away}
+              {existingPick.pick_home} : {existingPick.pick_away}
             </p>
           </div>
           <div
             className="px-3 py-1.5 rounded-lg"
             style={{
-              background: ownPick.points_earned > 0 ? 'var(--accent-dim)' : 'rgba(255,255,255,0.04)',
+              background: existingPick.points_earned > 0 ? 'var(--accent-dim)' : 'rgba(255,255,255,0.04)',
             }}
           >
             <p
@@ -230,10 +216,10 @@ export default function MatchCard({ match, existingPick, currentUserId }: Props)
                 fontFamily: 'Bebas Neue, system-ui',
                 fontSize: '1.4rem',
                 letterSpacing: '0.04em',
-                color: ownPick.points_earned > 0 ? 'var(--accent)' : 'var(--text-muted)',
+                color: existingPick.points_earned > 0 ? 'var(--accent)' : 'var(--text-muted)',
               }}
             >
-              {ownPick.points_earned > 0 ? `+${ownPick.points_earned} pts` : '— pts'}
+              {existingPick.points_earned > 0 ? `+${existingPick.points_earned} pts` : '— pts'}
             </p>
           </div>
         </div>
