@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import { User } from '@/types'
