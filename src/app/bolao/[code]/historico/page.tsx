@@ -149,7 +149,7 @@ export default function HistoricoBolaoPage() {
           </div>
         )}
       </div>
-      <BottomNav />
+      <BottomNav bolaoCode={code} />
     </div>
   )
 }

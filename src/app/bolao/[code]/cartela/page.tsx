@@ -110,7 +110,7 @@ export default function CartelaBolaoPage() {
           : byPhase[activePhase].map(m => <MatchCard key={m.id} match={m} existingPick={picks[m.id]} />)
         }
       </div>
-      <BottomNav />
+      <BottomNav bolaoCode={code} />
     </div>
   )
 }

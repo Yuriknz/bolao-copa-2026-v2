@@ -71,19 +71,18 @@ export default function BolaoPage() {
           style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', marginBottom: '12px', display: 'block' }}>
           ← Meus Bolões
         </button>
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text)' }}>{bolao?.name}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'var(--accent-dim)', color: 'var(--accent)', letterSpacing: '0.12em' }}>
-                #{bolao?.code}
-              </span>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                {members.length} participante{members.length !== 1 ? 's' : ''}
-              </span>
-            </div>
+
+        <div className="flex items-start justify-between gap-3">
+          <div style={{ minWidth: 0 }}>
+            <h1 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {bolao?.name}
+            </h1>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px', display: 'block' }}>
+              {members.length} participante{members.length !== 1 ? 's' : ''}
+            </span>
           </div>
           <button onClick={copyInvite}
+            className="transition-all active:scale-[0.96] flex-shrink-0"
             style={{
               fontSize: '12px', fontWeight: 700, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
               background: copied ? 'var(--accent-dim)' : 'var(--surface-2)',
@@ -92,6 +91,42 @@ export default function BolaoPage() {
               transition: 'all 0.2s',
             }}>
             {copied ? '✓ Copiado!' : '🔗 Convidar'}
+          </button>
+        </div>
+
+        {/* Código do bolão em destaque */}
+        <div
+          className="mt-4 rounded-2xl p-4 flex items-center justify-between"
+          style={{ background: 'var(--surface-2)', border: '1px solid var(--border-bright)' }}
+        >
+          <div>
+            <p style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
+              Código do bolão
+            </p>
+            <p style={{
+              fontFamily: 'Bebas Neue, system-ui, sans-serif',
+              fontSize: '2rem',
+              letterSpacing: '0.25em',
+              color: 'var(--accent)',
+              lineHeight: 1,
+              filter: 'drop-shadow(0 0 8px rgba(0,230,118,0.35))',
+            }}>
+              {bolao?.code}
+            </p>
+          </div>
+          <button
+            onClick={() => { navigator.clipboard.writeText(bolao?.code ?? ''); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+            className="transition-all active:scale-[0.93]"
+            style={{
+              fontSize: '11px', fontWeight: 700, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
+              background: copied ? 'var(--accent)' : 'var(--surface-3)',
+              color: copied ? '#08090e' : 'var(--text-muted)',
+              border: `1px solid ${copied ? 'var(--accent)' : 'var(--border-bright)'}`,
+              transition: 'all 0.2s',
+              letterSpacing: '0.04em',
+            }}
+          >
+            {copied ? '✓ Copiado' : 'Copiar código'}
           </button>
         </div>
       </div>

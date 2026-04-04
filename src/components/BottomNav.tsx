@@ -28,14 +28,25 @@ const HistoryIcon = () => (
   </svg>
 )
 
-const NAV = [
-  { href: '/cartela', label: 'Cartela', Icon: CartIcon },
-  { href: '/ranking', label: 'Ranking', Icon: TrophyIcon },
-  { href: '/historico', label: 'Histórico', Icon: HistoryIcon },
-]
+interface BottomNavProps {
+  bolaoCode?: string
+}
 
-export default function BottomNav() {
+export default function BottomNav({ bolaoCode }: BottomNavProps) {
   const path = usePathname()
+
+  const NAV = bolaoCode
+    ? [
+        { href: `/bolao/${bolaoCode}/cartela`,  label: 'Cartela',   Icon: CartIcon },
+        { href: `/bolao/${bolaoCode}`,           label: 'Ranking',   Icon: TrophyIcon },
+        { href: `/bolao/${bolaoCode}/historico`, label: 'Histórico', Icon: HistoryIcon },
+      ]
+    : [
+        { href: '/cartela',  label: 'Cartela',   Icon: CartIcon },
+        { href: '/ranking',  label: 'Ranking',   Icon: TrophyIcon },
+        { href: '/historico',label: 'Histórico', Icon: HistoryIcon },
+      ]
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 flex"
