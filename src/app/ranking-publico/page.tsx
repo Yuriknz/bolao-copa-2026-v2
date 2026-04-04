@@ -1,15 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
+export const dynamic = 'force-dynamic'
 
-export const revalidate = 60 // revalida a cada 60s
+import { getSupabase } from '@/lib/supabase'
 
 async function getRanking() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = getSupabase()
   const { data } = await supabase
     .from('users')
-    .select('id, name, total_points, exact_scores, champion_pick')
+    .select('id, name, total_points, exact_scores')
     .order('total_points', { ascending: false })
     .order('exact_scores', { ascending: false })
   return data ?? []
@@ -45,15 +42,15 @@ export default async function PublicRankingPage() {
                 <p className="font-bold text-sm text-white truncate">{user.name}</p>
                 <p className="text-[10px] text-slate-500">{user.exact_scores} exatos</p>
               </div>
-              <p className="text-lg font-extrabold text-white">{user.total_points} <span className="text-xs text-slate-500">pts</span></p>
+              <p className="text-lg font-extrabold text-white">
+                {user.total_points} <span className="text-xs text-slate-500">pts</span>
+              </p>
             </div>
           ))}
         </div>
       )}
 
-      <p className="text-center text-slate-700 text-xs mt-8">
-        Atualizado a cada 60 segundos
-      </p>
+      <p className="text-center text-slate-700 text-xs mt-8">Atualizado em tempo real</p>
     </div>
   )
 }
