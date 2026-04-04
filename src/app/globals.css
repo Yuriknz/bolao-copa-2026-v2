@@ -18,9 +18,9 @@
   --red-dim: rgba(244, 63, 94, 0.12);
   --amber: #f59e0b;
   --amber-dim: rgba(245, 158, 11, 0.12);
-  --text: #dde1ed;
-  --text-muted: #46506e;
-  --text-dim: #272f47;
+  --text: #e8ecf7;
+  --text-muted: #7d8eac;
+  --text-dim: #4a567a;
 }
 
 * {

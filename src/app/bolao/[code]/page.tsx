@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import { Bolao, BolaoMember, User } from '@/types'
 import Logo from '@/components/Logo'
+import BottomNav from '@/components/BottomNav'
 
 export default function BolaoPage() {
   const router = useRouter()
@@ -64,7 +65,7 @@ export default function BolaoPage() {
   )
 
   return (
-    <div className="min-h-screen max-w-md mx-auto pb-10">
+    <div className="min-h-screen max-w-md mx-auto pb-28">
       {/* Header */}
       <div className="px-4 pt-6 pb-5" style={{ borderBottom: '1px solid var(--border)' }}>
         <button onClick={() => router.push('/meus-boloes')}
@@ -208,6 +209,7 @@ export default function BolaoPage() {
           <div className="flex justify-between"><span>Campeão certo</span><span style={{ color: '#c084fc', fontWeight: 700 }}>+20 pts bônus</span></div>
         </div>
       </div>
+      <BottomNav bolaoCode={code} />
     </div>
   )
 }

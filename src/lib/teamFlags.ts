@@ -17,6 +17,7 @@ export const TEAM_CODES: Record<string, string> = {
 
   // América do Norte / CONCACAF
   'EUA': 'us',
+  'Estados Unidos': 'us',
   'Canadá': 'ca',
   'México': 'mx',
   'Costa Rica': 'cr',
@@ -51,6 +52,7 @@ export const TEAM_CODES: Record<string, string> = {
   'Eslovênia': 'si',
   'Eslováquia': 'sk',
   'República Checa': 'cz',
+  'Tchéquia': 'cz',
   'Albânia': 'al',
   'Escócia': 'gb-sct',
   'País de Gales': 'gb-wls',
@@ -66,6 +68,7 @@ export const TEAM_CODES: Record<string, string> = {
   'Azerbaijão': 'az',
   'Cazaquistão': 'kz',
   'Bósnia': 'ba',
+  'Bósnia-Herzegovina': 'ba',
   'Kosovo': 'xk',
   'Montenegro': 'me',
   'Macedônia do Norte': 'mk',
@@ -96,6 +99,7 @@ export const TEAM_CODES: Record<string, string> = {
   'Moçambique': 'mz',
   'Angola': 'ao',
   'Congo': 'cd',
+  'RD Congo': 'cd',
   'Guiné': 'gn',
   'Burkina Faso': 'bf',
   'Cabo Verde': 'cv',
