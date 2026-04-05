@@ -241,4 +241,4 @@ Arquivo: src/components/StatusBadge.tsx
 - Depois de cada feature: `git add . && git commit -m "feat: ..." && git push`
 - Vercel faz deploy automático a cada push na main
 - Não criar arquivos de teste por enquanto
-- Não modificar supabase/migrations/ — migrações são feitas via MCP do Claude.ai
+- Não modificar supabase/migrations/ — migrações são feitas via MCP do Claude.ai.
