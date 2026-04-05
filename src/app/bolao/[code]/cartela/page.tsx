@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { supabase, getLocalUserId } from '@/lib/supabase'
+import { supabase, getSupabase, getLocalUserId } from '@/lib/supabase'
 import { Match, Pick, PHASE_LABELS, MatchPhase } from '@/types'
 import MatchCard from '@/components/MatchCard'
 import PageHeader from '@/components/PageHeader'
@@ -23,7 +23,8 @@ export default function CartelaBolaoPage() {
     if (!id) { router.replace('/'); return }
     loadData(id)
 
-    const channel = supabase
+    const client = getSupabase()
+    const channel = client
       .channel('matches-realtime')
       .on('postgres_changes', {
         event: 'UPDATE',
@@ -34,7 +35,7 @@ export default function CartelaBolaoPage() {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    return () => { client.removeChannel(channel) }
   }, [])
 
   async function loadData(userId: string) {
