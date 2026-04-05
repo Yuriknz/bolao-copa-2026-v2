@@ -60,9 +60,12 @@ export default function MatchCard({ match, existingPick }: Props) {
     ? '1px solid var(--border)'
     : undefined
 
-  // Points preview
-  const livePoints = match.status === 'live' && hasInputs && match.score_home != null && match.score_away != null
-    ? calcPoints(parseInt(home), parseInt(away), match.score_home, match.score_away, match.multiplier)
+  // Points preview for live: use typed inputs if available, else saved pick
+  const livePickHome = hasInputs ? parseInt(home) : existingPick?.pick_home ?? null
+  const livePickAway = hasInputs ? parseInt(away) : existingPick?.pick_away ?? null
+  const livePoints = match.status === 'live' && livePickHome != null && livePickAway != null
+    && match.score_home != null && match.score_away != null
+    ? calcPoints(livePickHome, livePickAway, match.score_home, match.score_away, match.multiplier)
     : null
 
   return (
@@ -109,31 +112,40 @@ export default function MatchCard({ match, existingPick }: Props) {
 
         {/* Score / Inputs */}
         <div className="flex items-center gap-2">
-          {match.status === 'finished' ? (
+          {(match.status === 'finished' || match.status === 'live') ? (
             <div
               className="flex items-center gap-2 px-4 py-2 rounded-xl"
-              style={{ background: 'var(--surface-2)' }}
+              style={{
+                background: match.status === 'live' ? 'var(--red-dim)' : 'var(--surface-2)',
+                border: match.status === 'live' ? '1px solid rgba(244,63,94,0.25)' : undefined,
+              }}
             >
+              {match.status === 'live' && (
+                <span
+                  className="rounded-full animate-pulse-badge"
+                  style={{ width: '6px', height: '6px', background: 'var(--red)', flexShrink: 0 }}
+                />
+              )}
               <span
                 style={{
                   fontFamily: 'Bebas Neue, system-ui',
                   fontSize: '2rem',
-                  color: 'var(--text)',
+                  color: match.status === 'live' ? 'var(--red)' : 'var(--text)',
                   lineHeight: 1,
                 }}
               >
-                {match.score_home}
+                {match.score_home ?? '–'}
               </span>
               <span style={{ color: 'var(--text-muted)', fontWeight: 700, fontSize: '1.2rem' }}>:</span>
               <span
                 style={{
                   fontFamily: 'Bebas Neue, system-ui',
                   fontSize: '2rem',
-                  color: 'var(--text)',
+                  color: match.status === 'live' ? 'var(--red)' : 'var(--text)',
                   lineHeight: 1,
                 }}
               >
-                {match.score_away}
+                {match.score_away ?? '–'}
               </span>
             </div>
           ) : (
@@ -198,40 +210,6 @@ export default function MatchCard({ match, existingPick }: Props) {
         </div>
       </div>
 
-      {/* Live score display */}
-      {match.status === 'live' && match.score_home != null && match.score_away != null && (
-        <div
-          className="mt-3 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg"
-          style={{ background: 'var(--red-dim)', border: '1px solid rgba(244,63,94,0.2)' }}
-        >
-          <span
-            className="rounded-full animate-pulse-badge inline-block"
-            style={{ width: '6px', height: '6px', background: 'var(--red)', flexShrink: 0 }}
-          />
-          <span
-            style={{
-              fontFamily: 'Bebas Neue, system-ui',
-              fontSize: '1.2rem',
-              color: 'var(--red)',
-              letterSpacing: '0.08em',
-            }}
-          >
-            {match.score_home} : {match.score_away}
-          </span>
-          <span
-            style={{
-              fontSize: '10px',
-              color: 'var(--red)',
-              fontWeight: 600,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Ao Vivo
-          </span>
-        </div>
-      )}
-
       {/* Points preview */}
       {match.status === 'open' && (
         <div className="mt-2 text-center">
@@ -241,11 +219,12 @@ export default function MatchCard({ match, existingPick }: Props) {
           </span>
         </div>
       )}
-      {match.status === 'live' && hasInputs && livePoints !== null && (
+      {match.status === 'live' && livePoints !== null && (
         <div className="mt-2 text-center">
           <span style={{ fontSize: '11px', color: livePoints > 0 ? 'var(--accent)' : 'var(--text-muted)' }}>
-            Se mantiver:{' '}
+            Seu palpite vale:{' '}
             <span style={{ fontWeight: 700 }}>{livePoints > 0 ? `+${livePoints} pts` : '+0 pts'}</span>
+            {' '}se mantiver
           </span>
         </div>
       )}
