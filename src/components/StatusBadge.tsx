@@ -1,3 +1,5 @@
+'use client'
+import { useState, useEffect } from 'react'
 import { MatchStatus } from '@/types'
 import { minutesUntilMatch, isLockingSoon } from '@/lib/points'
 
@@ -14,16 +16,26 @@ const CONFIG: Record<MatchStatus, { label: string; color: string; bg: string }> 
 }
 
 export default function StatusBadge({ status, matchTime }: Props) {
-  const cfg = CONFIG[status]
-  const soon = status === 'open' && isLockingSoon(matchTime)
-  const mins = minutesUntilMatch(matchTime)
+  const [, setTick] = useState(0)
 
-  const color = soon ? 'var(--amber)' : cfg.color
-  const bg = soon ? 'var(--amber-dim)' : cfg.bg
+  useEffect(() => {
+    if (status !== 'open') return
+    const interval = setInterval(() => setTick(t => t + 1), 30000)
+    return () => clearInterval(interval)
+  }, [status])
+
+  const cfg = CONFIG[status]
+  const mins = minutesUntilMatch(matchTime)
+  const locking = status === 'open' && mins > 0 && mins <= 5
+  const soon = status === 'open' && mins > 0 && mins <= 30
+
+  const color = locking ? 'var(--red)' : soon ? 'var(--amber)' : cfg.color
+  const bg    = locking ? 'var(--red-dim)' : soon ? 'var(--amber-dim)' : cfg.bg
+  const label = locking ? 'Travando...' : soon ? `⚡ Trava em ${mins}min` : cfg.label
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full font-semibold"
+      className={`inline-flex items-center gap-1.5 rounded-full font-semibold ${locking || soon ? 'animate-pulse-badge' : ''}`}
       style={{
         color,
         background: bg,
@@ -39,7 +51,7 @@ export default function StatusBadge({ status, matchTime }: Props) {
           style={{ width: '5px', height: '5px', background: 'var(--red)', flexShrink: 0 }}
         />
       )}
-      {soon ? `⚡ ${mins}min` : cfg.label}
+      {label}
     </span>
   )
 }

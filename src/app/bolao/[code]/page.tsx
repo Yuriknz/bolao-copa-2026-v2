@@ -1,11 +1,17 @@
 'use client'
 export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import { Bolao, BolaoMember, User } from '@/types'
 import Logo from '@/components/Logo'
 import BottomNav from '@/components/BottomNav'
+
+function avatarColor(name: string): string {
+  const colors = ['#5E4FDB', '#0F6E56', '#993C1D', '#185FA5', '#3B6D11', '#854F0B', '#993556', '#5F5E5A']
+  const hash = name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  return colors[hash % colors.length]
+}
 
 export default function BolaoPage() {
   const router = useRouter()
@@ -16,6 +22,10 @@ export default function BolaoPage() {
   const [notFound, setNotFound] = useState(false)
   const [copied, setCopied] = useState(false)
   const myId = getLocalUserId()
+
+  // TAREFA 3: track previous positions for animation
+  const prevPositions = useRef<Record<string, number>>({})
+  const [posDeltas, setPosDeltas] = useState<Record<string, number>>({})
 
   useEffect(() => {
     if (!myId) { router.replace('/'); return }
@@ -35,7 +45,20 @@ export default function BolaoPage() {
       .eq('bolao_id', bolaoData.id)
       .order('total_points', { ascending: false })
       .order('exact_scores', { ascending: false })
-    if (membersData) setMembers(membersData as any)
+    if (membersData) {
+      const newMembers = membersData as any
+      // Compute position deltas vs previous
+      const newPositions: Record<string, number> = {}
+      newMembers.forEach((m: any, idx: number) => { newPositions[m.user_id] = idx })
+      const deltas: Record<string, number> = {}
+      Object.keys(newPositions).forEach(uid => {
+        const prev = prevPositions.current[uid]
+        if (prev !== undefined) deltas[uid] = prev - newPositions[uid] // positive = moved up
+      })
+      prevPositions.current = newPositions
+      setPosDeltas(deltas)
+      setMembers(newMembers)
+    }
     setLoading(false)
   }
 
@@ -255,11 +278,15 @@ export default function BolaoPage() {
               {members.map((m, idx) => {
                 const isMe = m.user_id === myId
                 const isTop = idx === 0
+                const delta = posDeltas[m.user_id] ?? 0
+                const name = m.user?.name ?? ''
+                const color = avatarColor(name)
                 return (
                   <div key={m.id}
                     className={`flex items-center gap-3 rounded-2xl p-4 card-hover animate-slide-up ${isTop ? 'shimmer-once' : ''}`}
                     style={{
                       animationDelay: `${Math.min(idx * 0.04, 0.3)}s`,
+                      transition: 'transform 0.3s ease, background 0.3s ease',
                       background: isMe
                         ? 'var(--accent-dim)'
                         : isTop
@@ -269,20 +296,34 @@ export default function BolaoPage() {
                       boxShadow: isTop ? '0 4px 24px rgba(251,191,36,0.06)' : undefined,
                     }}>
 
-                    {/* Position */}
-                    <div style={{ width: '32px', textAlign: 'center', fontSize: isTop ? '22px' : '14px', fontWeight: 900, color: idx < 3 ? 'var(--gold)' : 'var(--text-muted)', flexShrink: 0, lineHeight: 1 }}>
-                      {medal(idx + 1)}
+                    {/* Position + delta arrow */}
+                    <div style={{ width: '36px', textAlign: 'center', flexShrink: 0, lineHeight: 1 }}>
+                      <div style={{ fontSize: isTop ? '22px' : '14px', fontWeight: 900, color: idx < 3 ? 'var(--gold)' : 'var(--text-muted)' }}>
+                        {medal(idx + 1)}
+                      </div>
+                      {delta !== 0 && (
+                        <div style={{ fontSize: '10px', fontWeight: 700, color: delta > 0 ? 'var(--accent)' : 'var(--red)', marginTop: '2px' }}>
+                          {delta > 0 ? '▲' : '▼'}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Avatar */}
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: isMe ? 'rgba(0,230,118,0.2)' : isTop ? 'rgba(251,191,36,0.12)' : 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isMe ? 'var(--accent)' : isTop ? 'var(--gold)' : 'var(--text-muted)', fontWeight: 800, fontSize: '15px', flexShrink: 0, border: `1.5px solid ${isMe ? 'rgba(0,230,118,0.3)' : isTop ? 'rgba(251,191,36,0.3)' : 'var(--border)'}` }}>
-                      {m.user?.name?.[0]?.toUpperCase()}
+                    {/* Avatar - TAREFA 4: cor por hash do nome */}
+                    <div style={{
+                      width: '40px', height: '40px', borderRadius: '50%',
+                      background: color,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#fff',
+                      fontWeight: 800, fontSize: '15px', flexShrink: 0,
+                      border: `1.5px solid ${isMe ? 'rgba(0,230,118,0.3)' : isTop ? 'rgba(251,191,36,0.3)' : 'transparent'}`,
+                    }}>
+                      {name[0]?.toUpperCase()}
                     </div>
 
                     {/* Name + stats */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {m.user?.name}
+                      <p style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', transition: 'color 0.2s' }}>
+                        {name}
                         {isMe && <span style={{ color: 'var(--accent)', fontSize: '11px', marginLeft: '6px', fontWeight: 600 }}>(você)</span>}
                       </p>
                       <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>

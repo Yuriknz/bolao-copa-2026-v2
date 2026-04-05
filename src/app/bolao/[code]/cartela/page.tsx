@@ -22,6 +22,19 @@ export default function CartelaBolaoPage() {
     const id = getLocalUserId()
     if (!id) { router.replace('/'); return }
     loadData(id)
+
+    const channel = supabase
+      .channel('matches-realtime')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'matches',
+      }, (payload) => {
+        setMatches(prev => prev.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m))
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
   async function loadData(userId: string) {

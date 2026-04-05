@@ -4,6 +4,7 @@ import { Match, Pick } from '@/types'
 import { supabase, getLocalUserId } from '@/lib/supabase'
 import StatusBadge from './StatusBadge'
 import TeamFlag from './TeamFlag'
+import { calcPoints } from '@/lib/points'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -28,6 +29,7 @@ export default function MatchCard({ match, existingPick }: Props) {
   const [err, setErr] = useState('')
 
   const hasPick = existingPick != null
+  const hasInputs = home !== '' && away !== ''
 
   async function savePick() {
     const userId = getLocalUserId()
@@ -57,6 +59,11 @@ export default function MatchCard({ match, existingPick }: Props) {
   const defaultBorder = (match.status === 'locked' || match.status === 'finished')
     ? '1px solid var(--border)'
     : undefined
+
+  // Points preview
+  const livePoints = match.status === 'live' && hasInputs && match.score_home != null && match.score_away != null
+    ? calcPoints(parseInt(home), parseInt(away), match.score_home, match.score_away, match.multiplier)
+    : null
 
   return (
     <div
@@ -190,6 +197,58 @@ export default function MatchCard({ match, existingPick }: Props) {
           </span>
         </div>
       </div>
+
+      {/* Live score display */}
+      {match.status === 'live' && match.score_home != null && match.score_away != null && (
+        <div
+          className="mt-3 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg"
+          style={{ background: 'var(--red-dim)', border: '1px solid rgba(244,63,94,0.2)' }}
+        >
+          <span
+            className="rounded-full animate-pulse-badge inline-block"
+            style={{ width: '6px', height: '6px', background: 'var(--red)', flexShrink: 0 }}
+          />
+          <span
+            style={{
+              fontFamily: 'Bebas Neue, system-ui',
+              fontSize: '1.2rem',
+              color: 'var(--red)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            {match.score_home} : {match.score_away}
+          </span>
+          <span
+            style={{
+              fontSize: '10px',
+              color: 'var(--red)',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Ao Vivo
+          </span>
+        </div>
+      )}
+
+      {/* Points preview */}
+      {match.status === 'open' && (
+        <div className="mt-2 text-center">
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            Vale até{' '}
+            <span style={{ color: 'var(--accent)', fontWeight: 700 }}>+{3 * match.multiplier} pts</span>
+          </span>
+        </div>
+      )}
+      {match.status === 'live' && hasInputs && livePoints !== null && (
+        <div className="mt-2 text-center">
+          <span style={{ fontSize: '11px', color: livePoints > 0 ? 'var(--accent)' : 'var(--text-muted)' }}>
+            Se mantiver:{' '}
+            <span style={{ fontWeight: 700 }}>{livePoints > 0 ? `+${livePoints} pts` : '+0 pts'}</span>
+          </span>
+        </div>
+      )}
 
       {/* Result row - finished matches */}
       {match.status === 'finished' && hasPick && (
