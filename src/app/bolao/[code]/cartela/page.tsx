@@ -31,9 +31,12 @@ export default function CartelaBolaoPage() {
         schema: 'public',
         table: 'matches',
       }, (payload) => {
+        console.log('[Realtime] UPDATE recebido:', payload)
         setMatches(prev => prev.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m))
       })
-      .subscribe()
+      .subscribe((status) => {
+        console.log('[Realtime] status do canal:', status)
+      })
 
     return () => { client.removeChannel(channel) }
   }, [])
